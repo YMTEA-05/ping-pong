@@ -35,11 +35,10 @@ def main():
         pygame.display.flip()
         clock.tick(FPS)
 
-        # Check if game is over and show message briefly
+        # Game over handling
         if engine.game_over:
-            pygame.display.flip()
-            pygame.time.delay(3000)  # 3-second delay
-            running = False  # exit after delay
+            engine.show_replay_options(SCREEN)  # replay menu
+            
     pygame.quit()
 
 if __name__ == "__main__":
