@@ -1,6 +1,7 @@
 import pygame
 from .paddle import Paddle
 from .ball import Ball
+import os
 
 # Game Engine
 
@@ -23,6 +24,11 @@ class GameEngine:
         self.max_score = 5
         self.game_over = False
         self.winner_text = ""
+        # Load sound effects
+        self.hit_sound = pygame.mixer.Sound(os.path.join("assets", "hit.wav"))       # paddle hit
+        self.wall_sound = pygame.mixer.Sound(os.path.join("assets", "wall.wav"))     # wall bounce
+        self.score_sound = pygame.mixer.Sound(os.path.join("assets", "score.wav"))   # scoring
+
 
 
     def handle_input(self):
@@ -36,15 +42,21 @@ class GameEngine:
         if self.game_over:
             return
 
-        self.ball.move()
-        self.ball.check_collision(self.player, self.ai)
+        # Move ball with wall sound
+        self.ball.move(wall_sound=self.wall_sound)
+
+        # Check paddle collisions with hit sound
+        self.ball.check_collision(self.player, self.ai, hit_sound=self.hit_sound)
+
         self.ai.auto_track(self.ball, self.height)
 
         if self.ball.x <= 0:
             self.ai_score += 1
+            self.score_sound.play()
             self.ball.reset()
         elif self.ball.x >= self.width:
             self.player_score += 1
+            self.score_sound.play()
             self.ball.reset()
 
         # Check for winner
@@ -86,10 +98,10 @@ class GameEngine:
         waiting = True
         font = pygame.font.SysFont("Arial", 28)
         WHITE = (255, 255, 255)
-    
+
         while waiting:
             screen.fill((0, 0, 0))
-    
+
             # Display menu
             lines = [
                 "Game Over! Choose match length:",
@@ -102,9 +114,9 @@ class GameEngine:
                 text_surf = font.render(line, True, WHITE)
                 text_rect = text_surf.get_rect(center=(self.width // 2, self.height // 2 - 60 + i * 40))
                 screen.blit(text_surf, text_rect)
-    
+
             pygame.display.flip()
-    
+
             # Handle input
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -123,7 +135,7 @@ class GameEngine:
                     elif event.key == pygame.K_ESCAPE:
                         pygame.quit()
                         exit()
-    
+
         # Reset game state for replay
         self.player_score = 0
         self.ai_score = 0

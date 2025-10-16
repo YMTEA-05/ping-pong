@@ -1,6 +1,9 @@
 import pygame
 from game.game_engine import GameEngine
 
+# Initialize mixer first
+pygame.mixer.init()
+
 # Initialize pygame/Start application
 pygame.init()
 
@@ -38,7 +41,7 @@ def main():
         # Game over handling
         if engine.game_over:
             engine.show_replay_options(SCREEN)  # replay menu
-            
+
     pygame.quit()
 
 if __name__ == "__main__":
